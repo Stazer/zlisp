@@ -192,7 +192,7 @@ T memory::read(iterator location) const
 class stack
 {
 public:
-    using data_type = std::vector<std::uint8_t>;
+    using data_type = memory;
     using iterator = data_type::iterator;
     using const_iterator = data_type::const_iterator;
     using reverse_iterator = data_type::reverse_iterator;
