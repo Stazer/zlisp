@@ -358,7 +358,8 @@ template <typename T>
 void stack::push(T value)
 {
     up(sizeof(value));
-    *reinterpret_cast<T*>(&*(pointer-sizeof(T))) = value;
+
+    new (&*(pointer-sizeof(T))) T(value);
 }
 
 template <typename T>
