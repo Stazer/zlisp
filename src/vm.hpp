@@ -194,30 +194,8 @@ T memory::read(iterator location) const
 class stack
 {
 public:
-    using data_type = memory;
-    using iterator = data_type::iterator;
-    using const_iterator = data_type::const_iterator;
-    using reverse_iterator = data_type::reverse_iterator;
-    using const_reverse_iterator = data_type::const_reverse_iterator;
-
-    stack();
-
-    stack(const stack& s);
-    stack& operator=(const stack& s);
-
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
-
-    reverse_iterator rbegin();
-    reverse_iterator rend();
-    const_reverse_iterator rbegin() const;
-    const_reverse_iterator rend() const;
-    const_reverse_iterator crbegin() const;
-    const_reverse_iterator crend() const;
+    stack(class memory& memory);
+    stack(class memory& memory, memory::iterator pointer);
 
     void up(std::size_t amount);
     void down(std::size_t amount);
@@ -247,78 +225,22 @@ public:
     void print(std::ostream& output) const;
 
 private:
-    void ensure(std::size_t n);
+    class memory& memory;
+    memory::iterator pointer;
 
-    data_type data;
-    data_type::iterator pointer;
+    void ensure(std::size_t n);
 };
 
-stack::stack()
+stack::stack(class memory& memory):
+    memory(memory),
+    pointer(std::begin(memory))
 {
-    pointer = data.begin();
 }
 
-stack::stack(const stack& s)
+stack::stack(class memory& memory, memory::iterator pointer):
+    memory(memory),
+    pointer(pointer)
 {
-    data = s.data;
-    pointer = data.begin() + std::distance(s.data.begin(), data_type::const_iterator(s.pointer));
-}
-stack& stack::operator=(const stack& s)
-{
-    data = s.data;
-    pointer = data.begin() + std::distance(s.data.begin(), data_type::const_iterator(s.pointer));
-
-    return *this;
-}
-
-typename stack::iterator stack::begin()
-{
-    return data.begin();
-}
-typename stack::iterator stack::end()
-{
-    return data.end();
-}
-typename stack::const_iterator stack::begin() const
-{
-    return data.begin();
-}
-typename stack::const_iterator stack::end() const
-{
-    return data.end();
-}
-typename stack::const_iterator stack::cbegin() const
-{
-    return data.cbegin();
-}
-typename stack::const_iterator stack::cend() const
-{
-    return data.cend();
-}
-
-typename stack::reverse_iterator stack::rbegin()
-{
-    return data.rbegin();
-}
-typename stack::reverse_iterator stack::rend()
-{
-    return data.rend();
-}
-typename stack::const_reverse_iterator stack::rbegin() const
-{
-    return data.rbegin();
-}
-typename stack::const_reverse_iterator stack::rend() const
-{
-    return data.rend();
-}
-typename stack::const_reverse_iterator stack::crbegin() const
-{
-    return data.crbegin();
-}
-typename stack::const_reverse_iterator stack::crend() const
-{
-    return data.crend();
 }
 
 void stack::up(std::size_t amount)
@@ -377,32 +299,32 @@ T stack::pop()
     return *reinterpret_cast<T*>(&*pointer);
 }
 
-void stack::ensure(std::size_t n)
-{
-    auto delta = std::distance(std::begin(data), pointer);
-    if(delta + n >= data.size())
-    {
-        data.resize(data.size() + n);
-        pointer = std::begin(data) + delta;
-    }
-}
-
 template <typename T>
 void stack::print(std::ostream& output) const
 {
     output << "[";
 
-    for(auto it = data.begin(); it != data.end() - sizeof(T); it += sizeof(T))
+    for(auto it = std::begin(memory); it != std::end(memory) - sizeof(T); it += sizeof(T))
     {
         output << *reinterpret_cast<const T*>(&*it);
 
-        if(it + sizeof(T) != data.end() - sizeof(T))
+        if(it + sizeof(T) != std::end(memory) - sizeof(T))
         {
             output << " ";
         }
     }
 
     output << "]";
+}
+
+void stack::ensure(std::size_t n)
+{
+    auto delta = std::distance(std::begin(memory), pointer);
+    if(delta + n >= memory.size())
+    {
+        memory.resize(memory.size() + n);
+        pointer = std::begin(memory) + delta;
+    }
 }
 
 enum class instruction_type : std::uint8_t
@@ -562,7 +484,5 @@ void executor::main()
         }
     }
 }
-
-
 
 #endif

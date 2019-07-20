@@ -53,6 +53,7 @@ class list : public expression
 {
 public:
   void add(std::shared_ptr<expression> expr);
+
 private:
   std::vector<std::shared_ptr<expression>> elements;
 };
@@ -81,9 +82,8 @@ std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
   ////////// examples where it breaks:
   ///////////////////// "abc def"
   ///////////////////// () ")"
-  /*
   //Tokenize
-  std::vector<Token> toks;
+  /*std::vector<Token> toks;
   for(std::string line; std::getline(is, line); )
   {
     std::size_t atm_beg = 0;
@@ -112,7 +112,7 @@ std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
     }
   }
   //Parse
-  std::vector<std::shared_ptr<expression>> ast;
+  */std::vector<std::shared_ptr<expression>> ast;/*
   std::queue<std::shared_ptr<list>> lists;
   for(auto& t : toks)
   {
@@ -160,27 +160,26 @@ std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
       } break;
     }
   }
-
+                                                 */
   return ast;
-  */
 }
 
 int main()
 {
-    class memory memory;
-    class stack stack;
+    class memory instruction_memory;
+    class memory stack_memory;
+    class stack stack(stack_memory);
 
-    memory << instruction_type::PUSH << integer(42)
-           << instruction_type::PUSH << integer(28)
-           << instruction_type::ADD
-           << instruction_type::DUMP;
+    instruction_memory << instruction_type::PUSH << integer(42)
+                       << instruction_type::PUSH << integer(28)
+                       << instruction_type::ADD
+                       << instruction_type::DUMP;
 
-    memory << instruction_type::HALT;
+    instruction_memory << instruction_type::HALT;
 
-    executor e(stack, memory);
+    executor e(stack, instruction_memory);
 
     e.main();
-
 
     std::stringstream ss("((((() ()) >)\"abc\" x )() () () (()()) ) 42");
     auto ast = reader::read(ss);
