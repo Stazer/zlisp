@@ -18,6 +18,6 @@ include(ParseAndAddCatchTests)
 ParseAndAddCatchTests(zlisp_parsing_test)
 
 # Main program
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
-add_executable(zlisp main.cpp)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
+add_executable(zlisp src/main.cpp)
 
