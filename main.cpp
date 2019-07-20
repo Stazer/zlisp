@@ -144,7 +144,8 @@ template <typename T>
 void memory::write(std::size_t location, T data)
 {
     ensure(location, sizeof(T));
-    *reinterpret_cast<T*>(&this->data[location]) = data;
+
+    new (&this->data[location]) T (data);
 }
 
 template <typename T>
