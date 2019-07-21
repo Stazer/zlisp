@@ -1,10 +1,11 @@
 #pragma once
 
 #include "symbol.hpp"
+#include "tmp.hpp"
 #include <memory>
 #include <vector>
 
-class expression
+class expression : public runtime_cast<expression>
 {
 public:
   using ptr = std::shared_ptr<expression>;

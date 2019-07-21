@@ -1,5 +1,5 @@
 #include "symbol.hpp"
-#include "traits.hpp"
+#include "tmp.hpp"
 
 template<typename T, typename H = std::uint_fast32_t>
 constexpr H hash_string(T str)
