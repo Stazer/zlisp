@@ -19,5 +19,5 @@ ParseAndAddCatchTests(zlisp_parsing_test)
 
 # Main program
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
-add_executable(zlisp src/main.cpp)
+add_executable(zlisp src/main.cpp src/reader.cpp src/ast.cpp)
 
