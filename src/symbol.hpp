@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <vector>
 #include <iosfwd>
+#include <string>
+#include <ostream>
 
 struct symbol
 {
@@ -30,7 +32,7 @@ private:
 
   std::uint_fast32_t hash;
 };
-struct symbol_hasher 
+struct symbol_hasher
 {
   std::size_t operator()(symbol symb) const
   { return symb.get_hash(); }
