@@ -5,7 +5,7 @@ void list::add(expression::ptr expr)
   elements.emplace_back(expr);
 }
 
-atom::atom(const void* data)
+atom::atom(symbol data)
   : data(data)
 {  }
 

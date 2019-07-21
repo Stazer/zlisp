@@ -1,5 +1,7 @@
 #pragma once
 
+#include "symbol.hpp"
+
 #include <unordered_map>
 #include <cstdio>
 #include <memory>
@@ -26,10 +28,11 @@ private:
   class token
   {
   public:
-    token(token_kind kind, const void* data);
+    token(token_kind kind, symbol data);
 
     token_kind kind;
-    const void* data;
+    symbol data;
+    // source_location loc;   // TODO
   };
 private:
   reader(std::istream& is);
@@ -42,7 +45,5 @@ private:
 
   std::size_t col;
   std::size_t row;
-
-  std::unordered_map<std::uint_fast32_t, std::vector<std::uint_fast8_t>> token_data_table;
 };
 

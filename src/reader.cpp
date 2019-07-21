@@ -5,12 +5,12 @@
 #include <istream>
 #include <queue>
 
-reader::token::token(token_kind kind, const void* data)
+reader::token::token(token_kind kind, symbol data)
   : kind(kind), data(data)
 {  }
 
 reader::reader(std::istream& is)
-  : is(is), linebuf(), col(0), row(1), token_data_table()
+  : is(is), linebuf(), col(0), row(1)
 {  }
 
 template<>
@@ -68,7 +68,7 @@ char reader::get<char>()
 template<>
 reader::token reader::get<reader::token>()
 {
-  void* data = nullptr;
+  symbol data("");
   token_kind kind = token_kind::Undef;
 
   char ch = get<char>();
@@ -97,10 +97,7 @@ reader::token reader::get<reader::token>()
         hash ^= (hash * 31) + ch;
       }
       kind = token_kind::Atom;
-      auto& v = token_data_table[hash];
-      v.resize(name.size() + 1, 0);
-      std::copy(name.begin(), name.end(), v.begin());
-      data = &v[0];
+      data = symbol(name);
     } break;
 
   case '(':
@@ -111,7 +108,6 @@ reader::token reader::get<reader::token>()
       kind = token_kind::EndOfFile;
     break;
   }
-  // TODO: add source range
   return token(kind, data);
 }
 
@@ -122,7 +118,7 @@ std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
   //Parse
   std::vector<std::shared_ptr<expression>> ast;
   std::queue<std::shared_ptr<list>> lists;
-  token tok(token_kind::Undef, nullptr);
+  token tok(token_kind::Undef, "");
   while(tok.kind != token_kind::EndOfFile)
   {
     tok = r.get<reader::token>();

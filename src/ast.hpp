@@ -1,5 +1,6 @@
 #pragma once
 
+#include "symbol.hpp"
 #include <memory>
 #include <vector>
 
@@ -23,8 +24,8 @@ private:
 class atom : public expression
 {
 public:
-  atom(const void* data);
+  atom(symbol data);
 private:
-  const void* data;
+  symbol data;
 };
 
