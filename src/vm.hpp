@@ -35,6 +35,7 @@ public:
     const_reverse_iterator crend() const;
 
     std::size_t size() const;
+    bool empty() const;
 
     void resize(std::size_t n);
     void ensure(std::size_t location, std::size_t bytes);
@@ -120,6 +121,11 @@ typename memory::const_reverse_iterator memory::crend() const
 std::size_t memory::size() const
 {
     return data.size();
+}
+
+bool memory::empty() const
+{
+    return data.empty();
 }
 
 void memory::resize(std::size_t n)
@@ -304,13 +310,16 @@ void stack::print(std::ostream& output) const
 {
     output << "[";
 
-    for(auto it = std::begin(memory); it != std::end(memory) - sizeof(T); it += sizeof(T))
+    if(!memory.empty())
     {
-        output << *reinterpret_cast<const T*>(&*it);
-
-        if(it + sizeof(T) != std::end(memory) - sizeof(T))
+        for(auto it = std::begin(memory); it != std::end(memory) - sizeof(T); it += sizeof(T))
         {
-            output << " ";
+            output << *reinterpret_cast<const T*>(&*it);
+
+            if(it + sizeof(T) != std::end(memory) - sizeof(T))
+            {
+                output << " ";
+            }
         }
     }
 
