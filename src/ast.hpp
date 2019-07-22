@@ -18,6 +18,8 @@ class list : public expression
 public:
   void add(expression::ptr expr);
 
+    const std::vector<expression::ptr>& children() const;
+
 private:
   std::vector<expression::ptr> elements;
 };
@@ -25,8 +27,11 @@ private:
 class atom : public expression
 {
 public:
-  atom(symbol data);
+    atom(struct symbol data);
+
+    const symbol& symbol() const;
+
 private:
-  symbol data;
+    struct symbol data;
 };
 

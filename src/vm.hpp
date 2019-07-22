@@ -314,7 +314,14 @@ void stack::print(std::ostream& output) const
     {
         for(auto it = std::begin(memory); it != std::end(memory) - sizeof(T); it += sizeof(T))
         {
-            output << *reinterpret_cast<const T*>(&*it);
+            std::string prefix = "";
+
+            if(it == pointer)
+            {
+                prefix = "->";
+            }
+
+            output << prefix << *reinterpret_cast<const T*>(&*it);
 
             if(it + sizeof(T) != std::end(memory) - sizeof(T))
             {

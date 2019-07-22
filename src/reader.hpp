@@ -13,7 +13,7 @@ class expression;
 class reader
 {
 public:
-  static std::vector<std::shared_ptr<expression>> read(std::istream& is);
+    static std::vector<std::shared_ptr<expression>> read(std::istream& is);
 private:
   enum class token_kind : std::int8_t
   {
