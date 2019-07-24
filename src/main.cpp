@@ -1,5 +1,7 @@
 #include <sstream>
 #include <stack>
+#include <memory>
+#include <utility>
 
 #include "vm.hpp"
 #include "ast.hpp"
@@ -50,6 +52,64 @@ void compiler::compile(const std::vector<expression::ptr>& ast)
                 memory << instruction_type::ADD;
             }
         }
+    }
+}
+
+class traverse_event
+{
+};
+
+class traverser
+{
+public:
+    using ptr = std::unique_ptr<traverser>;
+
+    virtual ~traverser() = default;
+
+    void start(std::vector<expression::ptr>& tree);
+
+    virtual void traverse(traverse_event& event) = 0;
+
+private:
+};
+
+void traverser::start(std::vector<expression::ptr>& tree)
+{
+    traverse_event event;
+    traverse(event);
+}
+
+class traverser_container : public traverser
+{
+public:
+    using children_type = std::vector<traverser::ptr>;
+
+    template <typename... Args>
+    void add_child(Args&&... args);
+    void add_child(traverser::ptr&& ptr);
+
+    virtual void traverse(traverse_event& event);
+
+private:
+    children_type children;
+};
+
+template <typename... Args>
+void traverser_container::add_child(Args&&... args)
+{
+    add_children(std::make_unique(std::forward(args...)));
+}
+
+void traverser_container::add_child(traverser::ptr&& ptr)
+{
+    children.push_back(std::move(ptr));
+}
+
+void traverser_container::traverse(traverse_event& event)
+{
+    for(auto child = children.begin(); child != children.end(); ++child)
+    {
+        (*child)->traverse(event);
     }
 }
 
