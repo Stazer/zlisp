@@ -16,12 +16,12 @@ public:
 class list : public expression
 {
 public:
-  void add(expression::ptr expr);
+    void add(expression::ptr expr);
 
     const std::vector<expression::ptr>& children() const;
 
 private:
-  std::vector<expression::ptr> elements;
+    std::vector<expression::ptr> elements;
 };
 
 class atom : public expression
@@ -34,4 +34,3 @@ public:
 private:
     struct symbol data;
 };
-
