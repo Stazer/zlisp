@@ -5,12 +5,12 @@
 #include <istream>
 #include <queue>
 
-reader::token::token(token_kind kind, symbol data)
-  : kind(kind), data(data)
+reader::token::token(token_kind kind, symbol data, source_range range)
+  : kind(kind), data(data), loc(range)
 {  }
 
-reader::reader(std::istream& is)
-  : is(is), linebuf(), col(0), row(1)
+reader::reader(const char* module, std::istream& is)
+  : module(module), is(is), linebuf(), col(0), row(1)
 {  }
 
 template<>
@@ -108,17 +108,17 @@ reader::token reader::get<reader::token>()
       kind = token_kind::EndOfFile;
     break;
   }
-  return token(kind, data);
+  return token(kind, data, {module, beg_col + 1, beg_row, col + 1, row});
 }
 
-std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
+std::vector<std::shared_ptr<expression>> reader::read(const char* module, std::istream& is)
 {
-  reader r(is);
+  reader r(module, is);
 
   //Parse
   std::vector<std::shared_ptr<expression>> ast;
   std::queue<std::shared_ptr<list>> lists;
-  token tok(token_kind::Undef, "");
+  token tok(token_kind::Undef, "", {});
   while(tok.kind != token_kind::EndOfFile)
   {
     tok = r.get<reader::token>();
@@ -128,13 +128,13 @@ std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
       {
         if(lists.empty())
         {
-          auto l = std::make_shared<list>();
+          auto l = std::make_shared<list>(tok.loc);
           ast.push_back(l);
           lists.push(l);
         }
         else
         {
-          auto l = std::make_shared<list>();
+          auto l = std::make_shared<list>(tok.loc);
           lists.front()->add(l);
           lists.push(l);
         }
@@ -149,6 +149,7 @@ std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
         }    
         else
         {
+          lists.front()->change_location(lists.front()->location() + tok.loc);
           lists.pop();
         }
       } break;
@@ -157,11 +158,11 @@ std::vector<std::shared_ptr<expression>> reader::read(std::istream& is)
       {
         if(lists.empty())
         {
-          ast.push_back(std::make_shared<atom>(tok.data));
+          ast.push_back(std::make_shared<atom>(tok.loc, tok.data));
         }
         else
         {
-          lists.front()->add(std::make_shared<atom>(tok.data));
+          lists.front()->add(std::make_shared<atom>(tok.loc, tok.data));
         }
       } break;
 

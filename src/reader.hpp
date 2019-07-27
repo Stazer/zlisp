@@ -1,6 +1,7 @@
 #pragma once
 
 #include "symbol.hpp"
+#include "source_range.hpp"
 
 #include <unordered_map>
 #include <cstdio>
@@ -13,7 +14,7 @@ class expression;
 class reader
 {
 public:
-    static std::vector<std::shared_ptr<expression>> read(std::istream& is);
+    static std::vector<std::shared_ptr<expression>> read(const char* module, std::istream& is);
 private:
   enum class token_kind : std::int8_t
   {
@@ -29,19 +30,21 @@ private:
   class token
   {
   public:
-    token(token_kind kind, symbol data);
+    token(token_kind kind, symbol data, source_range range);
 
     token_kind kind;
     symbol data;
-    // source_location loc;   // TODO
+    source_range loc;
   };
 private:
-  reader(std::istream& is);
+  reader(const char* module, std::istream& is);
 
   template<typename T>
   T get() { static_assert(sizeof(T) >= 0, "unimplemented"); }
 private:
+  const char* module;
   std::istream& is;
+
   std::string linebuf;
 
   std::size_t col;

@@ -281,15 +281,15 @@ void stack::peek(T& value)
 template <typename T>
 T stack::peek()
 {
-    return *reinterpret_cast<T*>(&*(pointer-sizeof(T)));
+    return *reinterpret_cast<T*>(&*(pointer - sizeof(T)));
 }
 
 template <typename T>
 void stack::push(T value)
 {
-    up(sizeof(value));
+    ensure(sizeof(T));
 
-    new (&*(pointer-sizeof(T))) T(value);
+    new (&*(pointer - sizeof(T))) T(value);
 }
 
 template <typename T>
@@ -301,8 +301,12 @@ void stack::pop(T& value)
 template <typename T>
 T stack::pop()
 {
+    T cpy = *reinterpret_cast<T*>(&*pointer);
+
+    reinterpret_cast<T*>(&*pointer)->~T();
     down(sizeof(T));
-    return *reinterpret_cast<T*>(&*pointer);
+
+    return cpy;
 }
 
 template <typename T>

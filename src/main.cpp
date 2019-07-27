@@ -43,7 +43,7 @@ void compiler::compile(const std::vector<expression::ptr>& ast)
             for(auto it = l->children().rbegin(); it != l->children().rend()-1; ++it)
             {
                 auto atom = (*it)->as<::atom>();
-                auto i = std::stoi(atom->symbol().get_string());
+                auto i = std::stoi(atom->to_symbol().get_string());
                 memory << instruction_type::PUSH << integer(i);
             }
 
@@ -97,6 +97,7 @@ private:
 template <typename... Args>
 void traverser_container::add_child(Args&&... args)
 {
+  // FIXME: this is super buggy. you call forward with multiple arguments... and "add_children" doesn't exist
     add_children(std::make_unique(std::forward(args...)));
 }
 
@@ -116,7 +117,7 @@ void traverser_container::traverse(traverse_event& event)
 int main()
 {
     std::stringstream ss("(+ 1 2 3 4)");
-    auto ast = reader::read(ss);
+    auto ast = reader::read("STATIC", ss);
 
     memory instruction_memory;
     memory stack_memory;

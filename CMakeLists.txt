@@ -6,6 +6,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
+set(ZLISP_FILES src/reader.cpp
+  src/ast.cpp
+  src/reader.cpp
+  src/symbol.cpp
+  src/source_range.cpp
+  )
+
 find_package(Catch2 REQUIRED)
 
 # Tests
@@ -19,5 +26,6 @@ ParseAndAddCatchTests(zlisp_parsing_test)
 
 # Main program
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
-add_executable(zlisp src/main.cpp src/reader.cpp src/ast.cpp src/symbol.cpp)
+add_executable(zlisp src/main.cpp 
+  "${ZLISP_FILES}")
 
